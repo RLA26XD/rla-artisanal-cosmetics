@@ -49,8 +49,22 @@ def init_database():
         
         import pandas as pd
         
-        # Read CSV
-        df = pd.read_csv(csv_path)
+        # Read CSV with encoding handling
+        try:
+            df = pd.read_csv(csv_path, encoding='utf-8')
+        except UnicodeDecodeError:
+            print("   ⚠️  UTF-8 decode failed, trying latin-1...")
+            try:
+                df = pd.read_csv(csv_path, encoding='latin-1')
+            except Exception as e:
+                print(f"   ❌ Failed to read CSV with latin-1: {e}")
+                try:
+                    df = pd.read_csv(csv_path, encoding='utf-8', errors='ignore')
+                    print("   ✓ Read CSV with error handling (some characters may be skipped)")
+                except Exception as e:
+                    print(f"   ❌ Failed to read CSV: {e}")
+                    return
+        
         print(f"📊 CSV has {len(df):,} rows")
         
         # Import products in batches
