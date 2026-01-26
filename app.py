@@ -73,12 +73,14 @@ def register_blueprints(app):
     from routes.loyalty import loyalty_bp
     from routes.cart import cart_bp
     from routes.auth import auth_bp
+    from routes.health import health_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp, url_prefix='/products')
     app.register_blueprint(loyalty_bp, url_prefix='/loyalty')
     app.register_blueprint(cart_bp, url_prefix='/cart')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(health_bp)
 
 
 def init_dash(app):
@@ -273,13 +275,28 @@ def register_error_handlers(app):
     
     @app.errorhandler(404)
     def not_found_error(error):
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Not found'}), 404
         return render_template('errors/404.html'), 404
     
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
+        app.logger.error(f'Internal error: {error}')
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Internal server error'}), 500
+        return render_template('errors/500.html'), 500
+    
+    @app.errorhandler(Exception)
+    def handle_exception(error):
+        app.logger.error(f'Unhandled exception: {error}', exc_info=True)
+        db.session.rollback()
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Internal server error'}), 500
         return render_template('errors/500.html'), 500
 
 
 # Create the application instance (for gunicorn/wsgi)
-app = create_app(os.getenv('FLASK_ENV', 'development'))
+# Only create if not being imported
+if __name__ != '__main__':
+    app = create_app(os.getenv('FLASK_ENV', 'production'))
