@@ -76,19 +76,23 @@ def init_database():
             
             for _, row in batch.iterrows():
                 try:
+                    # Map CSV columns to Product model fields
+                    product_name = row.get('Label') or row.get('product_name') or row.get('label') or 'Unknown Product'
+                    brand = row.get('Brand') or row.get('brand') or 'Unknown'
+                    category = row.get('Category') or row.get('category') or 'other'
+                    price = row.get('Price') or row.get('price') or 0
+                    
                     product = Product(
-                        name=row.get('product_name', 'Unknown Product'),
-                        brand=row.get('brand', 'Unknown'),
-                        category=row.get('category', 'other').lower(),
-                        subcategory=row.get('subcategory', ''),
-                        price=float(row.get('price', 0)) if pd.notna(row.get('price')) else None,
-                        rating=float(row.get('rating', 0)) if pd.notna(row.get('rating')) else None,
-                        description=row.get('description', ''),
-                        ingredients=row.get('ingredients', ''),
-                        image_url=row.get('image_url', ''),
-                        product_url=row.get('product_url', ''),
-                        is_featured=bool(row.get('is_featured', False)),
-                        stock_quantity=int(row.get('stock_quantity', 100)) if pd.notna(row.get('stock_quantity')) else 100
+                        label=str(product_name),  # label, not name
+                        brand=str(brand),
+                        category=str(category).lower(),
+                        price=float(price) if pd.notna(price) else 0.0,
+                        price_inr=float(price) if pd.notna(price) else None,
+                        rating=float(row.get('Rank', 0)) if pd.notna(row.get('Rank')) else None,
+                        description=str(row.get('description', '')) if pd.notna(row.get('description')) else '',
+                        ingredients=str(row.get('Ingredients', '')) if pd.notna(row.get('Ingredients')) else '',
+                        image_url=str(row.get('ImageURL', '')) if pd.notna(row.get('ImageURL')) else '',
+                        stock_quantity=100
                     )
                     db.session.add(product)
                     imported += 1
