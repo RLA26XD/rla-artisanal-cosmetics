@@ -1,0 +1,29 @@
+# Core Flask Dependencies
+Flask>=3.0.0
+Flask-SQLAlchemy>=3.1.0
+Werkzeug>=3.0.0
+
+# Database
+SQLAlchemy>=2.0.27
+
+# Analytics Dashboard
+dash==2.14.2
+dash-bootstrap-components==1.5.0
+plotly==5.18.0
+pandas>=2.2.0
+
+# Data Processing
+numpy>=1.26.0
+
+# Forms and Validation
+Flask-WTF==1.2.1
+WTForms==3.1.1
+
+# Date/Time handling
+python-dateutil==2.8.2
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Development
+Flask-Cors==4.0.0

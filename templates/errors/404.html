@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+
+<section class="py-20 bg-cream min-h-screen flex items-center">
+    <div class="max-w-2xl mx-auto px-4 text-center">
+        <h1 class="font-playfair text-9xl font-bold text-emerald-deep mb-4">404</h1>
+        <h2 class="text-3xl font-bold text-emerald-deep mb-6">Page Not Found</h2>
+        <p class="text-xl text-gray-600 mb-8">The page you're looking for doesn't exist or has been moved.</p>
+        <a href="{{ url_for('main.index') }}" class="inline-block bg-emerald-deep text-white px-8 py-4 rounded-full font-bold hover:bg-emerald-900 transition">
+            Return Home
+        </a>
+    </div>
+</section>
+
+{% endblock %}

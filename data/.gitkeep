@@ -1,0 +1,5 @@
+# Place your Kaggle CSV file here
+# Example: cosmetics.csv
+
+# After downloading, run:
+# python ingest_data.py --csv data/cosmetics.csv
