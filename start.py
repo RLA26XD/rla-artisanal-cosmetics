@@ -212,6 +212,13 @@ def start_development(app):
     print(f"  Debugger PIN: Will be shown below")
     print(f"{'='*60}\n")
     
+    # Check if we're in a restricted environment (like Netlify build)
+    if os.environ.get('NETLIFY') or os.environ.get('CI'):
+        print("⚠️  Detected CI/build environment - skipping server start")
+        print("   This is a Flask web application that needs a server to run.")
+        print("   Please deploy to a Python hosting platform like Render, Railway, or Heroku.")
+        sys.exit(0)
+    
     app.run(debug=True, host=HOST, port=PORT, use_reloader=True)
 
 
