@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - RLA Artisanal Cosmetics{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <!-- Profile Header -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <div class="flex items-center gap-6">
+                <div class="w-24 h-24 bg-emerald-deep rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                    {{ user.name[0].upper() }}
+                </div>
+                <div>
+                    <h1 class="text-3xl font-playfair font-bold text-emerald-deep mb-2">{{ user.name }}</h1>
+                    <p class="text-gray-600">{{ user.email }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Member since {{ user.created_at.strftime('%B %Y') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h2 class="text-2xl font-playfair font-bold text-emerald-deep mb-6">Profile Information</h2>
+            
+            <form action="{{ url_for('auth.update_profile') }}" method="POST" class="space-y-6">
+                
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" name="name" value="{{ user.name }}" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                </div>
+
+                <!-- Email (Read-only) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" value="{{ user.email }}" disabled
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                    <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" name="phone" value="{{ user.phone or '' }}" placeholder="+91 98765 43210"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <input type="text" name="address" value="{{ user.address or '' }}" placeholder="Street address"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                </div>
+
+                <!-- City and State -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <input type="text" name="city" value="{{ user.city or '' }}" placeholder="City"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                        <input type="text" name="state" value="{{ user.state or '' }}" placeholder="State"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Pincode -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
+                    <input type="text" name="pincode" value="{{ user.pincode or '' }}" placeholder="400001" maxlength="6"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-deep focus:border-transparent">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex gap-4">
+                    <button type="submit" class="btn-primary px-8 py-3 text-white font-semibold rounded-lg">
+                        Save Changes
+                    </button>
+                    <a href="{{ url_for('main.index') }}" class="px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loyalty Account -->
+        {% if user.loyalty_account %}
+        <div class="bg-gradient-to-r from-emerald-deep to-emerald-800 rounded-2xl shadow-lg p-8 mt-8 text-white">
+            <h2 class="text-2xl font-playfair font-bold mb-4">Loyalty Rewards</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <p class="text-emerald-200 text-sm mb-1">Current Tier</p>
+                    <p class="text-3xl font-bold">{{ user.loyalty_account.tier.title() }}</p>
+                </div>
+                <div>
+                    <p class="text-emerald-200 text-sm mb-1">Points Balance</p>
+                    <p class="text-3xl font-bold">{{ user.loyalty_account.points_balance }}</p>
+                </div>
+                <div>
+                    <p class="text-emerald-200 text-sm mb-1">Lifetime Points</p>
+                    <p class="text-3xl font-bold">{{ user.loyalty_account.lifetime_points }}</p>
+                </div>
+            </div>
+            <a href="{{ url_for('loyalty.rewards') }}" class="inline-block mt-6 px-6 py-2 bg-saffron text-emerald-deep font-semibold rounded-lg hover:bg-yellow-400 transition">
+                View Rewards Dashboard →
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

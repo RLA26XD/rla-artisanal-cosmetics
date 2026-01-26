@@ -60,7 +60,15 @@
                 
                 <!-- Price -->
                 <div class="mb-8">
-                    <p class="text-5xl font-bold text-emerald-deep">₹{{ product.price_inr|round|int }}</p>
+                    <p class="text-5xl font-bold text-emerald-deep">
+                        {% if product.price_inr %}
+                            ₹{{ product.price_inr|round|int }}
+                        {% elif product.price %}
+                            ${{ product.price|round(2) }}
+                        {% else %}
+                            <span class="text-gray-400">Price N/A</span>
+                        {% endif %}
+                    </p>
                     {% if product.price %}
                     <p class="text-gray-500 mt-1">${{ product.price }}</p>
                     {% endif %}
@@ -161,7 +169,15 @@
                     <div class="p-4">
                         <p class="text-xs text-gray-500 mb-1">{{ related.brand }}</p>
                         <h3 class="font-semibold text-sm text-emerald-deep mb-2 line-clamp-2">{{ related.label }}</h3>
-                        <p class="text-lg font-bold text-emerald-deep">₹{{ related.price_inr|round|int }}</p>
+                        <p class="text-lg font-bold text-emerald-deep">
+                            {% if related.price_inr %}
+                                ₹{{ related.price_inr|round|int }}
+                            {% elif related.price %}
+                                ${{ related.price|round(2) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 {% endfor %}

@@ -155,7 +155,15 @@
                     <p class="text-sm text-gray-500 mb-1">{{ product.brand }}</p>
                     <h3 class="font-semibold text-lg text-emerald-deep mb-2 line-clamp-2">{{ product.label }}</h3>
                     <div class="flex items-center justify-between">
-                        <p class="text-2xl font-bold text-emerald-deep">₹{{ product.price_inr|round|int }}</p>
+                        <p class="text-2xl font-bold text-emerald-deep">
+                            {% if product.price_inr %}
+                                ₹{{ product.price_inr|round|int }}
+                            {% elif product.price %}
+                                ${{ product.price|round(2) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
                         {% if product.rating %}
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-saffron" fill="currentColor" viewBox="0 0 20 20">
@@ -203,7 +211,15 @@
                     <p class="text-sm text-gray-500 mb-1">{{ product.brand }}</p>
                     <h3 class="font-semibold text-lg text-emerald-deep mb-2 line-clamp-2">{{ product.label }}</h3>
                     <div class="flex items-center justify-between">
-                        <p class="text-2xl font-bold text-emerald-deep">₹{{ product.price_inr|round|int }}</p>
+                        <p class="text-2xl font-bold text-emerald-deep">
+                            {% if product.price_inr %}
+                                ₹{{ product.price_inr|round|int }}
+                            {% elif product.price %}
+                                ${{ product.price|round(2) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
                         {% if product.rating %}
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-saffron" fill="currentColor" viewBox="0 0 20 20">
