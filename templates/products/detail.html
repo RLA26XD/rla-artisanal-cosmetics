@@ -176,28 +176,31 @@
 {% block extra_js %}
 <script>
 function addToCart(productId) {
-    fetch('/products/api/add-to-cart', {
+    fetch('/cart/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            product_id: productId
+            product_id: productId,
+            quantity: 1
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Product added to cart!');
+            alert('✓ ' + data.message);
             // Update cart count in navigation
-            // Trigger telemetry event
+            if (typeof updateCartCount === 'function') {
+                updateCartCount();
+            }
         } else {
-            alert('Failed to add product to cart');
+            alert('Failed to add product to cart: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred');
+        alert('An error occurred while adding to cart');
     });
 }
 </script>

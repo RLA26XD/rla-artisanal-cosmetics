@@ -2,6 +2,65 @@
 
 A modern, full-stack e-commerce platform for Indian luxury cosmetics built with Flask, featuring analytics dashboard, loyalty rewards program, and telemetry tracking.
 
+## 🚀 Quick Start
+
+### 1. Setup Environment
+
+```bash
+# Clone or navigate to project
+cd rla-artisanal-cosmetics
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy environment file
+cp .env.example .env
+```
+
+### 2. Start the Application
+
+**One command for everything:**
+
+```bash
+python start.py
+```
+
+The script automatically:
+- Creates the `instance/` folder
+- Initializes the database
+- Starts the appropriate server based on `.env` settings
+
+### 3. Access the Application
+
+- **Website**: http://localhost:6969
+- **Analytics Dashboard**: http://localhost:6969/admin/analytics
+
+### 4. Switch Between Dev/Production
+
+**Development Mode** (default in `.env`):
+```bash
+FLASK_ENV=development
+```
+- Flask dev server with debug mode
+- Auto-reload on code changes
+- Detailed error pages
+
+**Production Mode** (in `.env`):
+```bash
+FLASK_ENV=production
+```
+- Gunicorn multi-worker server
+- Optimized performance
+- Production logging
+
+Then just run `python start.py` - same command for both!
+
+---
+
 ## 🎨 Design Philosophy
 
 **Modern Indian Luxury** - A premium aesthetic combining:
@@ -19,8 +78,10 @@ A modern, full-stack e-commerce platform for Indian luxury cosmetics built with 
 
 ```
 rla-artisanal-cosmetics/
+├── start.py                   # Universal startup script (USE THIS)
 ├── app.py                      # Main Flask application with Dash integration
 ├── config.py                   # Configuration settings
+├── gunicorn_config.py         # Production server configuration
 ├── ingest_data.py             # CSV data ingestion script
 ├── requirements.txt           # Python dependencies
 ├── .env.example               # Environment variables template

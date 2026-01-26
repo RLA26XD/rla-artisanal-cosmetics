@@ -5,6 +5,7 @@ RLA Artisanal Cosmetics E-Commerce Platform
 import os
 import warnings
 from flask import Flask, render_template, request, session, jsonify
+from flask_login import LoginManager
 from config import config
 from models import db
 from models.product import Product
@@ -27,17 +28,23 @@ def create_app(config_name='development'):
         Configured Flask application
     """
     app = Flask(__name__)
+    
+    # Load configuration
     app.config.from_object(config[config_name])
     
     # Initialize extensions
     db.init_app(app)
     
-    # Create instance folder if it doesn't exist
-    os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Please log in to access this page.'
+    login_manager.login_message_category = 'info'
     
-    # Create database tables
-    with app.app_context():
-        db.create_all()
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
     
     # Register blueprints
     register_blueprints(app)
@@ -64,10 +71,14 @@ def register_blueprints(app):
     from routes.main import main_bp
     from routes.products import products_bp
     from routes.loyalty import loyalty_bp
+    from routes.cart import cart_bp
+    from routes.auth import auth_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp, url_prefix='/products')
     app.register_blueprint(loyalty_bp, url_prefix='/loyalty')
+    app.register_blueprint(cart_bp, url_prefix='/cart')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
 
 def init_dash(app):
@@ -270,9 +281,5 @@ def register_error_handlers(app):
         return render_template('errors/500.html'), 500
 
 
-# Create the application instance
+# Create the application instance (for gunicorn/wsgi)
 app = create_app(os.getenv('FLASK_ENV', 'development'))
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=6969)

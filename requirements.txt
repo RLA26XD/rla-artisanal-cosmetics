@@ -1,6 +1,7 @@
 # Core Flask Dependencies
 Flask>=3.0.0
 Flask-SQLAlchemy>=3.1.0
+Flask-Login>=0.6.3
 Werkzeug>=3.0.0
 
 # Database
@@ -24,6 +25,9 @@ python-dateutil==2.8.2
 
 # Environment Variables
 python-dotenv==1.0.0
+
+# Production WSGI Server
+gunicorn>=21.2.0
 
 # Development
 Flask-Cors==4.0.0

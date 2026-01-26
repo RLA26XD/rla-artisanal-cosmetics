@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Login - RLA Artisanal Cosmetics{% endblock %}
+
+{% block content %}
+
+<section class="py-12 bg-cream min-h-screen flex items-center">
+    <div class="max-w-md mx-auto px-4 w-full">
+        
+        <!-- Login Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="font-playfair text-4xl font-bold text-emerald-deep mb-2">Welcome Back</h1>
+                <p class="text-gray-600">Sign in to your account</p>
+            </div>
+            
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Login Form -->
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="mb-6">
+                    <label for="email" class="block text-sm font-semibold text-emerald-deep mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron focus:border-transparent"
+                           placeholder="you@example.com">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-semibold text-emerald-deep mb-2">Password</label>
+                    <input type="password" id="password" name="password" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron focus:border-transparent"
+                           placeholder="••••••••">
+                </div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="remember" class="mr-2 rounded text-emerald-deep focus:ring-saffron">
+                        <span class="text-sm text-gray-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-emerald-deep hover:text-saffron">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="w-full bg-emerald-deep text-white py-3 rounded-lg font-semibold hover:bg-emerald-900 transition shadow-lg">
+                    Sign In
+                </button>
+            </form>
+            
+            <!-- Divider -->
+            <div class="my-6 flex items-center">
+                <div class="flex-1 border-t border-gray-300"></div>
+                <span class="px-4 text-gray-500 text-sm">OR</span>
+                <div class="flex-1 border-t border-gray-300"></div>
+            </div>
+            
+            <!-- Register Link -->
+            <div class="text-center">
+                <p class="text-gray-600">Don't have an account? 
+                    <a href="{{ url_for('auth.register') }}" class="text-emerald-deep font-semibold hover:text-saffron">
+                        Sign Up
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Back to Home -->
+        <div class="text-center mt-6">
+            <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-emerald-deep text-sm">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

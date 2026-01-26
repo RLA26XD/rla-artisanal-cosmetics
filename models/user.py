@@ -4,22 +4,21 @@ User and Loyalty Program Models
 from models import db
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """User model for customer accounts."""
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)  # Combined name field
     phone = db.Column(db.String(15), nullable=True)
     
     # Address Information
-    address_line1 = db.Column(db.String(200), nullable=True)
-    address_line2 = db.Column(db.String(200), nullable=True)
+    address = db.Column(db.String(200), nullable=True)
     city = db.Column(db.String(100), nullable=True)
     state = db.Column(db.String(50), nullable=True)
     pincode = db.Column(db.String(10), nullable=True)
@@ -31,6 +30,18 @@ class User(db.Model):
     
     # Relationships
     loyalty_account = db.relationship('LoyaltyAccount', backref='user', uselist=False)
+    
+    # Flask-Login required properties
+    @property
+    def is_authenticated(self):
+        return True
+    
+    @property
+    def is_anonymous(self):
+        return False
+    
+    def get_id(self):
+        return str(self.id)
     
     def set_password(self, password):
         """Hash and set password."""
@@ -48,9 +59,7 @@ class User(db.Model):
         return {
             'id': self.id,
             'email': self.email,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'full_name': f"{self.first_name} {self.last_name}",
+            'name': self.name,
             'phone': self.phone,
             'city': self.city,
             'state': self.state,

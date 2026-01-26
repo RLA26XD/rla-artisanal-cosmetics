@@ -114,8 +114,8 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ url_for('main.index') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Home</a>
                     <a href="{{ url_for('products.index') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Products</a>
-                    <a href="{{ url_for('products.index', category='Skincare') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Skincare</a>
-                    <a href="{{ url_for('products.index', category='Face Makeup') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Makeup</a>
+                    <a href="{{ url_for('products.index', category='skincare') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Skincare</a>
+                    <a href="{{ url_for('products.index', category='face') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Makeup</a>
                     <a href="{{ url_for('loyalty.rewards') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Rewards</a>
                     <a href="{{ url_for('main.about') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">About</a>
                 </div>
@@ -129,12 +129,38 @@
                         </svg>
                     </button>
                     
+                    <!-- User Account -->
+                    {% if current_user.is_authenticated %}
+                    <div class="relative group">
+                        <button class="text-emerald-deep hover:text-saffron transition flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span class="hidden md:inline text-sm font-medium">{{ current_user.name.split()[0] }}</span>
+                        </button>
+                        <!-- Dropdown -->
+                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
+                            <a href="{{ url_for('auth.profile') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Profile</a>
+                            <a href="{{ url_for('loyalty.rewards') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Rewards</a>
+                            <hr class="my-2">
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="text-emerald-deep hover:text-saffron transition flex items-center gap-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <span class="hidden md:inline text-sm font-medium">Login</span>
+                    </a>
+                    {% endif %}
+                    
                     <!-- Cart Icon -->
-                    <a href="#" class="text-emerald-deep hover:text-saffron transition relative">
+                    <a href="{{ url_for('cart.index') }}" class="text-emerald-deep hover:text-saffron transition relative">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
-                        <span class="absolute -top-2 -right-2 bg-saffron text-emerald-deep text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-saffron text-emerald-deep text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
                     </a>
                     
                     <!-- Mobile Menu Toggle -->
@@ -264,6 +290,27 @@
             const mobileMenu = document.getElementById('mobileMenu');
             mobileMenu.classList.toggle('hidden');
         }
+        
+        // Update cart count on page load
+        function updateCartCount() {
+            fetch('/cart/count')
+                .then(response => response.json())
+                .then(data => {
+                    const cartCount = document.getElementById('cart-count');
+                    if (cartCount) {
+                        cartCount.textContent = data.count;
+                        if (data.count > 0) {
+                            cartCount.classList.remove('hidden');
+                        } else {
+                            cartCount.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error updating cart count:', error));
+        }
+        
+        // Update cart count on page load
+        document.addEventListener('DOMContentLoaded', updateCartCount);
     </script>
     
     {% block extra_js %}{% endblock %}

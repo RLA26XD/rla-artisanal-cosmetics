@@ -95,8 +95,8 @@ def detail(product_id):
 @products_bp.route('/api/add-to-cart', methods=['POST'])
 def add_to_cart():
     """
-    API endpoint to log cart addition event.
-    Returns JSON response.
+    Legacy API endpoint for cart addition - redirects to new cart system.
+    Kept for backward compatibility.
     """
     data = request.get_json()
     product_id = data.get('product_id')
@@ -104,25 +104,12 @@ def add_to_cart():
     if not product_id:
         return jsonify({'error': 'Product ID required'}), 400
     
-    product = Product.query.get(product_id)
-    if not product:
-        return jsonify({'error': 'Product not found'}), 404
-    
-    # Log cart addition event
-    Telemetry.log_event(
-        event_type='cart_addition',
-        product_id=product_id,
-        session_id=session.get('session_id'),
-        category=product.category,
-        geo_state=data.get('geo_state'),
-        geo_city=data.get('geo_city')
-    )
-    
-    return jsonify({
-        'success': True,
-        'message': 'Product added to cart',
-        'product_id': product_id
-    })
+    # Forward to new cart endpoint
+    from routes.cart import cart_bp
+    from flask import current_app
+    with current_app.test_request_context('/cart/add', method='POST', json=data):
+        from routes.cart import add as cart_add
+        return cart_add()
 
 
 @products_bp.route('/api/cart-abandonment', methods=['POST'])
@@ -153,9 +140,9 @@ def search():
     query = request.args.get('q', '').strip()
     
     if not query:
-        return render_template('products/search.html', products=[], query='')
+        return redirect(url_for('products.index'))
     
-    # Seh in product label, brand, and category
+    # Search in product label, brand, and category
     products = Product.query.filter(
         db.or_(
             Product.label.ilike(f'%{query}%'),
@@ -173,8 +160,17 @@ def search():
         session_id=session.get('session_id')
     )
     
+    # Use products index template but pass search query
     return render_template(
-        'products/search.html',
+        'products/index.html',
         products=products,
-        query=query
+        pagination=None,
+        brands=[],
+        categories=[],
+        selected_brand=None,
+        selected_category=None,
+        min_price=None,
+        max_price=None,
+        min_rating=None,
+        search_query=query
     )

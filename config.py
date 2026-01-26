@@ -14,8 +14,16 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
     # Database Settings
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'instance', 'cosmetics.db')
+    # Check if DATABASE_URL from .env is relative, make it absolute
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url and db_url.startswith('sqlite:///') and not db_url.startswith('sqlite:////'):
+        # Relative path - make it absolute
+        db_path = db_url.replace('sqlite:///', '')
+        if not os.path.isabs(db_path):
+            db_url = 'sqlite:///' + os.path.abspath(os.path.join(basedir, db_path))
+    
+    SQLALCHEMY_DATABASE_URI = db_url or \
+        'sqlite:///' + os.path.abspath(os.path.join(basedir, 'instance', 'cosmetics.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Session Configuration

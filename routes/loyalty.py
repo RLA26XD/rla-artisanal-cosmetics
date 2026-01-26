@@ -22,8 +22,7 @@ def rewards():
     if not demo_user:
         demo_user = User(
             email='demo@rlacosmetics.com',
-            first_name='Demo',
-            last_name='User',
+            name='Demo User',
             city='Mumbai',
             state='Maharashtra'
         )
