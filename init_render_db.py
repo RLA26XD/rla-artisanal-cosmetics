@@ -38,7 +38,7 @@ def init_database():
             return
         
         # Import products from CSV
-        csv_path = BASE_DIR / 'cosmetics.csv'
+        csv_path = BASE_DIR / 'data' / 'cosmetics.csv'
         if not csv_path.exists():
             print(f"⚠️  CSV file not found at {csv_path}")
             print("   Skipping product import...")

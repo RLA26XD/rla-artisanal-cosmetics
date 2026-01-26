@@ -21,7 +21,7 @@ INSTANCE_DIR = BASE_DIR / 'instance'
 
 def load_csv_data(app):
     """Load data from CSV file if available"""
-    from app import db
+    from models import db
     from models.product import Product
     
     data_dir = BASE_DIR / 'data'
@@ -169,10 +169,14 @@ def init_database():
     print(f"   ✓ Instance folder: {INSTANCE_DIR}")
     
     # NOW import app (after folder is ready)
-    from app import app, db
+    from app import create_app
+    from models import db
     from models.product import Product
     from models.telemetry import Telemetry  
     from models.user import User, LoyaltyAccount
+    
+    # Create app instance
+    app = create_app(FLASK_ENV)
     
     # Verify database URI
     db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
