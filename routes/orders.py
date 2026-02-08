@@ -4,7 +4,7 @@ Order routes for checkout, order placement, and order management.
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
-from extensions import db
+from models import db
 from models.product import Product
 from models.order import Order, OrderItem
 
