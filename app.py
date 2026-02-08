@@ -25,7 +25,8 @@ def init_database():
     import pandas as pd
     from pathlib import Path
     
-    # Create all tables
+    # Drop and recreate all tables to apply schema changes
+    db.drop_all()
     db.create_all()
     print("✅ Database tables created")
     
