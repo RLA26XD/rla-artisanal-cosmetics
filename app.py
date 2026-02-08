@@ -25,8 +25,6 @@ def init_database():
     import pandas as pd
     from pathlib import Path
     
-    print(f"🔧 Initializing database: {app.config['SQLALCHEMY_DATABASE_URI'][:50]}...")
-    
     # Create all tables
     db.create_all()
     print("✅ Database tables created")
