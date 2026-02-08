@@ -24,18 +24,12 @@ def init_database():
     """
     import pandas as pd
     from pathlib import Path
-    import os
     
-    # Ensure database directory exists with proper permissions
-    if os.environ.get('RAILWAY_ENVIRONMENT'):
-        db_dir = '/tmp'
-        os.makedirs(db_dir, mode=0o777, exist_ok=True)
-        print(f"📁 Database directory: {db_dir}")
-        print(f"📁 Directory exists: {os.path.exists(db_dir)}")
-        print(f"📁 Directory writable: {os.access(db_dir, os.W_OK)}")
+    print(f"🔧 Initializing database: {app.config['SQLALCHEMY_DATABASE_URI'][:50]}...")
     
     # Create all tables
     db.create_all()
+    print("✅ Database tables created")
     
     # Check if products exist
     if Product.query.first() is None:

@@ -6,6 +6,7 @@ Werkzeug>=3.0.0
 
 # Database
 SQLAlchemy>=2.0.27
+psycopg2-binary>=2.9.9
 
 # Analytics Dashboard
 dash==2.14.2

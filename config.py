@@ -18,14 +18,22 @@ class Config:
     
     # Handle different database URL formats
     if db_url:
+        # Railway provides DATABASE_URL for PostgreSQL
+        # Fix postgres:// -> postgresql:// (SQLAlchemy requirement)
+        if db_url.startswith('postgres://'):
+            db_url = db_url.replace('postgres://', 'postgresql://', 1)
         SQLALCHEMY_DATABASE_URI = db_url
     else:
-        # Use /tmp for Railway (writable), instance for local
-        db_dir = '/tmp' if os.environ.get('RAILWAY_ENVIRONMENT') else os.path.join(basedir, 'instance')
+        # Local development uses SQLite
+        db_dir = os.path.join(basedir, 'instance')
         os.makedirs(db_dir, exist_ok=True)
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(db_dir, 'cosmetics.db')
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,  # Verify connections before using
+        'pool_recycle': 300,    # Recycle connections after 5 minutes
+    }
     
     # Session Configuration
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
