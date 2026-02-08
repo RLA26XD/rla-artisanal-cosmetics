@@ -20,8 +20,10 @@ class Config:
     if db_url:
         SQLALCHEMY_DATABASE_URI = db_url
     else:
-        # Default to local SQLite
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.join(basedir, 'instance', 'cosmetics.db'))
+        # Use /tmp for Railway (writable), instance for local
+        db_dir = '/tmp' if os.environ.get('RAILWAY_ENVIRONMENT') else os.path.join(basedir, 'instance')
+        os.makedirs(db_dir, exist_ok=True)
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(db_dir, 'cosmetics.db')
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
