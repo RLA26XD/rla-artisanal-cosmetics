@@ -14,7 +14,7 @@ class Product(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     brand = db.Column(db.String(100), nullable=False, index=True)
-    label = db.Column(db.String(200), nullable=False)  # Product name
+    label = db.Column(db.String(500), nullable=False)  # Product name (increased for long titles)
     category = db.Column(db.String(100), nullable=False, index=True)
     price = db.Column(db.Float, nullable=False)
     price_inr = db.Column(db.Float, nullable=True)  # Price in Indian Rupees
