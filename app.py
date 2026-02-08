@@ -32,6 +32,10 @@ def create_app(config_name='development'):
     # Load configuration
     app.config.from_object(config[config_name])
     
+    # Ensure instance folder exists for SQLite database
+    instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+    
     # Initialize extensions
     db.init_app(app)
     
@@ -54,6 +58,10 @@ def create_app(config_name='development'):
     
     # Register error handlers
     register_error_handlers(app)
+    
+    # Create database tables if they don't exist
+    with app.app_context():
+        db.create_all()
     
     # Before request handler for session management
     @app.before_request
