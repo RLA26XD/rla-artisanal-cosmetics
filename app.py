@@ -17,6 +17,71 @@ warnings.filterwarnings('ignore', category=FutureWarning, module='plotly')
 warnings.filterwarnings('ignore', category=FutureWarning, message='.*length-1 list-like.*')
 
 
+def init_database():
+    """
+    Initialize database tables and import products from CSV if needed.
+    This runs on app startup to ensure the database is ready.
+    """
+    import pandas as pd
+    from pathlib import Path
+    
+    # Create all tables
+    db.create_all()
+    
+    # Check if products exist
+    if Product.query.first() is None:
+        print("📦 No products found. Importing from CSV...")
+        
+        # Import products from CSV
+        csv_path = Path(__file__).parent / 'data' / 'cosmetics.csv'
+        
+        if csv_path.exists():
+            # Try different encodings
+            encodings = ['utf-8', 'latin-1', 'iso-8859-1']
+            df = None
+            
+            for encoding in encodings:
+                try:
+                    df = pd.read_csv(csv_path, encoding=encoding, on_bad_lines='skip')
+                    print(f"✓ Loaded CSV with {encoding} encoding")
+                    break
+                except (UnicodeDecodeError, pd.errors.ParserError):
+                    continue
+            
+            if df is None:
+                # Last resort: read with errors='ignore'
+                df = pd.read_csv(csv_path, encoding='utf-8', errors='ignore', on_bad_lines='skip')
+            
+            # Import products
+            products = []
+            for _, row in df.iterrows():
+                product = Product(
+                    label=row.get('Label', ''),
+                    brand=row.get('Brand', ''),
+                    category=row.get('Category', ''),
+                    price=float(row.get('Price', 0)) if pd.notna(row.get('Price')) else None,
+                    price_inr=float(row.get('Price', 0)) * 83 if pd.notna(row.get('Price')) else None,
+                    rating=float(row.get('Rank', 0)) if pd.notna(row.get('Rank')) else None,
+                    ingredients=row.get('Ingredients', '')
+                )
+                products.append(product)
+                
+                # Batch commit every 1000 products
+                if len(products) >= 1000:
+                    db.session.bulk_save_objects(products)
+                    db.session.commit()
+                    products = []
+            
+            # Commit remaining products
+            if products:
+                db.session.bulk_save_objects(products)
+                db.session.commit()
+            
+            print(f"✓ Imported {df.shape[0]} products from CSV")
+        else:
+            print(f"⚠️  CSV file not found at {csv_path}")
+
+
 def create_app(config_name='development'):
     """
     Application factory pattern for creating Flask app.
@@ -54,6 +119,10 @@ def create_app(config_name='development'):
     
     # Register error handlers
     register_error_handlers(app)
+    
+    # Initialize database on first startup
+    with app.app_context():
+        init_database()
     
     # Before request handler for session management
     @app.before_request

@@ -6,8 +6,4 @@ echo "🚂 Railway Build Starting..."
 # Install dependencies
 pip install -r requirements.txt
 
-# Initialize database (will use /tmp on Railway)
-echo "📦 Initializing database..."
-python init_db.py || echo "⚠️  Database initialization skipped (may already exist)"
-
 echo "✅ Railway Build Complete!"
