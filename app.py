@@ -66,13 +66,25 @@ def init_database():
                     except (ValueError, TypeError):
                         price_val = 0.0
                 
+                # Handle rating - remove commas and convert to float
+                rating_val = row.get('rating', None)
+                if pd.notna(rating_val) and rating_val != '':
+                    try:
+                        # Remove commas (for values like "14,338")
+                        rating_str = str(rating_val).replace(',', '')
+                        rating_val = float(rating_str)
+                    except (ValueError, TypeError):
+                        rating_val = None
+                else:
+                    rating_val = None
+                
                 product = Product(
                     label=row.get('product_name', '') or row.get('Label', ''),
                     brand=row.get('brand', '') or row.get('Brand', ''),
                     category=row.get('category', '') or row.get('Category', ''),
                     price=price_val,
                     price_inr=price_val * 83 if price_val > 0 else 0.0,
-                    rating=float(row.get('rating', 0)) if pd.notna(row.get('rating')) else None,
+                    rating=rating_val,
                     ingredients=row.get('ingredients', '') or row.get('Ingredients', '')
                 )
                 products.append(product)
