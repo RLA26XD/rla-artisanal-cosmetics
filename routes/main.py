@@ -65,3 +65,31 @@ def about():
 def contact():
     """Contact page."""
     return render_template('contact.html')
+
+
+@main_bp.route('/contact', methods=['POST'])
+def contact_submit():
+    """Handle contact form submission."""
+    from flask import flash, redirect, url_for, request
+    
+    name = request.form.get('name')
+    email = request.form.get('email')
+    subject = request.form.get('subject')
+    message = request.form.get('message')
+    
+    # In a real application, you would send an email or save to database
+    # For now, just show a success message
+    flash(f'Thank you {name}! We have received your message and will get back to you soon.', 'success')
+    return redirect(url_for('main.contact'))
+
+
+@main_bp.route('/privacy')
+def privacy():
+    """Privacy policy page."""
+    return render_template('privacy.html')
+
+
+@main_bp.route('/terms')
+def terms():
+    """Terms and conditions page."""
+    return render_template('terms.html')

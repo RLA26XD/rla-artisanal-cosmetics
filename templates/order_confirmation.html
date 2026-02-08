@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - RLA Artisanal Cosmetics{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="mb-2">Thank You for Your Order!</h2>
+                <p class="text-muted">Your order has been successfully placed.</p>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Number:</strong><br>
+                            <span class="text-primary fs-5">{{ order.order_number }}</span>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <strong>Order Date:</strong><br>
+                            {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-{{ order.get_status_badge_class() }}">{{ order.status|title }}</span>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <strong>Total Amount:</strong><br>
+                            <span class="fs-4 text-success">₹{{ "%.2f"|format(order.total_amount) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{{ order.shipping_name }}</strong></p>
+                    <p class="mb-1">{{ order.shipping_address }}</p>
+                    <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</p>
+                    <p class="mb-1">{{ order.shipping_country }}</p>
+                    <p class="mb-1"><i class="fas fa-phone me-2"></i>{{ order.shipping_phone }}</p>
+                    <p class="mb-0"><i class="fas fa-envelope me-2"></i>{{ order.shipping_email }}</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <small class="text-muted d-block">{{ item.product_brand }}</small>
+                                        <strong>{{ item.product_name }}</strong>
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">₹{{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-end"><strong>₹{{ "%.2f"|format(item.subtotal) }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong class="text-success fs-5">₹{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            {% if order.notes %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Notes</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ order.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>What's Next?</h5>
+                <ul class="mb-0">
+                    <li>You will receive an order confirmation email at <strong>{{ order.shipping_email }}</strong></li>
+                    <li>Your order will be processed within 1-2 business days</li>
+                    <li>Prepare cash for delivery (COD)</li>
+                    <li>Track your order status in your <a href="{{ url_for('account') }}" class="alert-link">account dashboard</a></li>
+                </ul>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{{ url_for('account') }}" class="btn btn-primary me-2">
+                    <i class="fas fa-user me-2"></i>View My Orders
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Order Details - RLA Artisanal Cosmetics{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="mb-4">
+        <a href="{{ url_for('account') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to My Orders
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order #{{ order.order_number }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong><br>
+                            {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-{{ order.get_status_badge_class() }} fs-6">{{ order.status|title }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <small class="text-muted d-block">{{ item.product_brand }}</small>
+                                        <strong>{{ item.product_name }}</strong>
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">₹{{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-end"><strong>₹{{ "%.2f"|format(item.subtotal) }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong class="text-success fs-5">₹{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            {% if order.notes %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Notes</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ order.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{{ order.shipping_name }}</strong></p>
+                    <p class="mb-1">{{ order.shipping_address }}</p>
+                    <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</p>
+                    <p class="mb-1">{{ order.shipping_country }}</p>
+                    <hr>
+                    <p class="mb-1"><i class="fas fa-phone me-2"></i>{{ order.shipping_phone }}</p>
+                    <p class="mb-0"><i class="fas fa-envelope me-2"></i>{{ order.shipping_email }}</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="timeline">
+                        <li class="completed">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Order Placed</strong>
+                                <small class="d-block text-muted">{{ order.created_at.strftime('%B %d, %Y') }}</small>
+                            </div>
+                        </li>
+                        <li class="{% if order.status in ['confirmed', 'shipped', 'delivered'] %}completed{% endif %}">
+                            <i class="fas fa-{% if order.status in ['confirmed', 'shipped', 'delivered'] %}check-circle{% else %}circle{% endif %}"></i>
+                            <div>
+                                <strong>Order Confirmed</strong>
+                                {% if order.status in ['confirmed', 'shipped', 'delivered'] %}
+                                <small class="d-block text-muted">Processing</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li class="{% if order.status in ['shipped', 'delivered'] %}completed{% endif %}">
+                            <i class="fas fa-{% if order.status in ['shipped', 'delivered'] %}check-circle{% else %}circle{% endif %}"></i>
+                            <div>
+                                <strong>Shipped</strong>
+                                {% if order.status in ['shipped', 'delivered'] %}
+                                <small class="d-block text-muted">On the way</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li class="{% if order.status == 'delivered' %}completed{% endif %}">
+                            <i class="fas fa-{% if order.status == 'delivered' %}check-circle{% else %}circle{% endif %}"></i>
+                            <div>
+                                <strong>Delivered</strong>
+                                {% if order.status == 'delivered' %}
+                                <small class="d-block text-muted">Order complete</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    list-style: none;
+    padding-left: 0;
+    position: relative;
+}
+
+.timeline li {
+    padding-left: 40px;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline li:last-child {
+    padding-bottom: 0;
+}
+
+.timeline li:before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 25px;
+    width: 2px;
+    height: calc(100% - 5px);
+    background: #dee2e6;
+}
+
+.timeline li:last-child:before {
+    display: none;
+}
+
+.timeline li i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    color: #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline li.completed i {
+    color: #28a745;
+}
+</style>
+{% endblock %}
