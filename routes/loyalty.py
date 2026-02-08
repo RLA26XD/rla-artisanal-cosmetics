@@ -1,7 +1,8 @@
 """
 Loyalty program routes
 """
-from flask import Blueprint, render_template, session, jsonify, request
+from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from models.user import User, LoyaltyAccount
 from models import db
 
@@ -9,43 +10,20 @@ loyalty_bp = Blueprint('loyalty', __name__)
 
 
 @loyalty_bp.route('/rewards')
+@login_required
 def rewards():
     """
     My Rewards page showing loyalty points and tier progress.
-    For demo purposes, uses session-based mock user.
     """
-    # In a real app, get user_id from authenticated session
-    # For demo, we'll create a mock loyalty account
+    # Get or create loyalty account for the current user
+    loyalty_account = LoyaltyAccount.query.filter_by(user_id=current_user.id).first()
     
-    # Get or create demo user
-    demo_user = User.query.filter_by(email='demo@rlacosmetics.com').first()
-    if not demo_user:
-        demo_user = User(
-            email='demo@rlacosmetics.com',
-            name='Demo User',
-            city='Mumbai',
-            state='Maharashtra'
-        )
-        demo_user.set_password('demo123')
-        db.session.add(demo_user)
-        db.session.commit()
-        
-        # Create loyalty account
-        loyalty = LoyaltyAccount(
-            user_id=demo_user.id,
-            points_balance=2500,
-            lifetime_points=2500
-        )
-        loyalty.update_tier()
-        db.session.add(loyalty)
-        db.session.commit()
-    
-    loyalty_account = LoyaltyAccount.query.filter_by(user_id=demo_user.id).first()
     if not loyalty_account:
+        # Create loyalty account if it doesn't exist
         loyalty_account = LoyaltyAccount(
-            user_id=demo_user.id,
-            points_balance=2500,
-            lifetime_points=2500
+            user_id=current_user.id,
+            points_balance=0,
+            lifetime_points=0
         )
         loyalty_account.update_tier()
         db.session.add(loyalty_account)
@@ -53,7 +31,7 @@ def rewards():
     
     return render_template(
         'loyalty/rewards.html',
-        user=demo_user,
+        user=current_user,
         loyalty=loyalty_account,
         loyalty_data=loyalty_account.to_dict()
     )

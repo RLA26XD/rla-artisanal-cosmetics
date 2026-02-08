@@ -132,7 +132,9 @@
                     <a href="{{ url_for('products.index') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Products</a>
                     <a href="{{ url_for('products.index', category='skincare') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Skincare</a>
                     <a href="{{ url_for('products.index', category='face') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Makeup</a>
+                    {% if current_user.is_authenticated %}
                     <a href="{{ url_for('loyalty.rewards') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">Rewards</a>
+                    {% endif %}
                     <a href="{{ url_for('main.about') }}" class="nav-link text-emerald-deep font-medium hover:text-saffron">About</a>
                 </div>
                 
@@ -211,7 +213,9 @@
                 <a href="{{ url_for('products.index') }}" class="block text-emerald-deep font-medium py-2">Products</a>
                 <a href="{{ url_for('products.index', category='Skincare') }}" class="block text-emerald-deep font-medium py-2">Skincare</a>
                 <a href="{{ url_for('products.index', category='Face Makeup') }}" class="block text-emerald-deep font-medium py-2">Makeup</a>
+                {% if current_user.is_authenticated %}
                 <a href="{{ url_for('loyalty.rewards') }}" class="block text-emerald-deep font-medium py-2">Rewards</a>
+                {% endif %}
                 <a href="{{ url_for('main.about') }}" class="block text-emerald-deep font-medium py-2">About</a>
             </div>
         </div>
