@@ -56,14 +56,24 @@ def init_database():
             # Import products
             products = []
             for _, row in df.iterrows():
+                # Handle price - use 0.0 as default if missing
+                price_val = row.get('price', 0)
+                if pd.isna(price_val) or price_val == '':
+                    price_val = 0.0
+                else:
+                    try:
+                        price_val = float(price_val)
+                    except (ValueError, TypeError):
+                        price_val = 0.0
+                
                 product = Product(
-                    label=row.get('Label', ''),
-                    brand=row.get('Brand', ''),
-                    category=row.get('Category', ''),
-                    price=float(row.get('Price', 0)) if pd.notna(row.get('Price')) else None,
-                    price_inr=float(row.get('Price', 0)) * 83 if pd.notna(row.get('Price')) else None,
-                    rating=float(row.get('Rank', 0)) if pd.notna(row.get('Rank')) else None,
-                    ingredients=row.get('Ingredients', '')
+                    label=row.get('product_name', '') or row.get('Label', ''),
+                    brand=row.get('brand', '') or row.get('Brand', ''),
+                    category=row.get('category', '') or row.get('Category', ''),
+                    price=price_val,
+                    price_inr=price_val * 83 if price_val > 0 else 0.0,
+                    rating=float(row.get('rating', 0)) if pd.notna(row.get('rating')) else None,
+                    ingredients=row.get('ingredients', '') or row.get('Ingredients', '')
                 )
                 products.append(product)
                 
