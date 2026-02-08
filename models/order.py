@@ -2,7 +2,7 @@
 Order model for tracking customer purchases.
 """
 from datetime import datetime
-from extensions import db
+from models import db
 
 class Order(db.Model):
     """Model for customer orders."""
